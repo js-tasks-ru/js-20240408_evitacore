@@ -11,8 +11,9 @@ export function createGetter(path) {
 
         let value = obj;
         for (const prop of properties) {
+            if(!value.hasOwnProperty(prop)) return;
             value = value[prop];
-          }
+        }
         return value;
     }
 }

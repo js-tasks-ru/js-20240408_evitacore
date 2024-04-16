@@ -75,4 +75,10 @@ describe('objects-arrays-intro-to-testing/create-getter', () => {
 
     expect(getter({})).toBeUndefined();
   });
+
+  it('should not return not own property2', () => {
+    const getter = createGetter('toString');
+
+    expect(getter({a: 42})).toBeUndefined();
+  });
 });

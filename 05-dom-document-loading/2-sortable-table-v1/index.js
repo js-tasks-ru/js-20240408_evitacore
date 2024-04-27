@@ -1,4 +1,4 @@
-export default class SortableTable {
+export default class SortableTableV1 {
     subElements = {};
 
     constructor(headerConfig = [], data = []) {
@@ -9,7 +9,7 @@ export default class SortableTable {
         this.createSubElements();
     }
 
-    sort(fieldValue = 'title', orderValue = 'asc') {  //desc
+    sort(fieldValue = 'title', orderValue = 'asc') {
         const sortField = this.headerConfig.find(column => column.id === fieldValue);
         this.sortData(sortField, orderValue);
         this.updateBody();
@@ -20,15 +20,11 @@ export default class SortableTable {
         const field = sortField.id;
         const type = sortField.sortType;
         this.data.sort((a,b) => {
-            if(type === 'number' && orderValue === 'asc') {
-                return a[field] - b[field]
-            } else if(type === 'number' && orderValue === 'desc') {
-                return b[field] - a[field]
-            } else if(orderValue === 'asc') {
-                return a[field].localeCompare(b[field], ['ru', 'en'], { caseFirst: "upper" })
-            } else {
-                return b[field].localeCompare(a[field], ['ru', 'en'], { caseFirst: "upper" })
+            const order = orderValue === 'asc' ? 1 : -1;
+            if(type === 'string') {
+                return order * a[field].localeCompare(b[field], ['ru', 'en'], { caseFirst: "upper" });
             }
+            return order * a[field] - b[field];
         })
     }
 

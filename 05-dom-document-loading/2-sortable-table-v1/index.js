@@ -22,9 +22,9 @@ export default class SortableTableV1 {
         this.data.sort((a,b) => {
             const order = orderValue === 'asc' ? 1 : -1;
             if(type === 'string') {
-                return order * a[field].localeCompare(b[field], ['ru', 'en'], { caseFirst: "upper" });
+                return order * (a[field].localeCompare(b[field], ['ru', 'en'], { caseFirst: "upper" }));
             }
-            return order * a[field] - b[field];
+            return order * (a[field] - b[field]);
         })
     }
 

@@ -1,8 +1,8 @@
 import SortableTableV1 from '../../05-dom-document-loading/2-sortable-table-v1/index.js';
 
 export default class SortableTableV2 extends SortableTableV1 {
-	defaultFieldValue = 'title';
-	defaultOrderValue = 'asc';
+	defaultSortField = 'title';
+	defaultSortOrder = 'asc';
 
   	constructor(headersConfig, {
 		data = [],
@@ -12,7 +12,7 @@ export default class SortableTableV2 extends SortableTableV1 {
 		super(headersConfig, data); 
 		this.isSortLocally = isSortLocally;
 		this.sorted = sorted;
-		this.sort(this.defaultFieldValue, this.defaultOrderValue);
+		this.sort(this.defaultSortField, this.defaultSortOrder);
 		this.createEventListeners();
   	}
 
@@ -30,7 +30,7 @@ export default class SortableTableV2 extends SortableTableV1 {
 			return;
 		}
 		const sortElementId = sortElement.dataset.id;
-		const sortElementOrder = sortElement.dataset.order === 'asc' ? 'desc' : 'asc';
+		const sortElementOrder = sortElement.dataset.order === 'desc' ? 'asc' : 'desc';
 
 		this.sort(sortElementId, sortElementOrder);
 	}
@@ -51,5 +51,4 @@ export default class SortableTableV2 extends SortableTableV1 {
 		super.destroy();
 		this.destroyEventListeners();
 	}
-
 }

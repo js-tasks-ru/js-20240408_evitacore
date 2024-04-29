@@ -46,12 +46,16 @@ class Tooltip {
   }
 
   handleDocumentPointermove = (event) => {
-    this.element.style.top = event.clientY + 'px';
-    this.element.style.left = event.clientX + 'px';
+    if(event.target.dataset.tooltip) {
+      this.element.style.top = event.clientY + 'px';
+      this.element.style.left = event.clientX + 'px';
+    }
   }
 
-  handleDocumentPointerout = () => {
-    this.element.remove();
+  handleDocumentPointerout = (event) => {
+    if(event.target.dataset.tooltip) {
+      this.element.remove();
+    }
   }
 
   destroy() {

@@ -39,8 +39,7 @@ export default class DoubleSlider {
     }
 
     setEventListeners() {
-        this.subElements.thumbLeft.addEventListener('pointerdown', this.handleDocumentPointerdown);
-        this.subElements.thumbRight.addEventListener('pointerdown', this.handleDocumentPointerdown);
+        document.addEventListener('pointerdown', this.handleDocumentPointerdown);
     }
 
     handleDocumentPointerdown = (event) => {

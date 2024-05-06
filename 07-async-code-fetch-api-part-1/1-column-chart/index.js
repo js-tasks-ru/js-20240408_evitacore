@@ -9,8 +9,8 @@ export default class ColumnChartV2 extends ColumnChartV1 {
     constructor(props = {}) {
         super(props);
         this.url = new URL(props.url, BACKEND_URL);
-        this.from = props.range?.from ?? new Date(0);
-        this.to = props.range?.to ?? new Date(0);
+        this.from = props.range?.from ?? new Date();
+        this.to = props.range?.to ?? new Date();
 
         this.createSubElements();
         this.update(this.from, this.to);

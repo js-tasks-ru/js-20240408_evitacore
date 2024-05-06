@@ -21,7 +21,6 @@ export default class ColumnChartV2 extends ColumnChartV1 {
         for (const element of elements) {
             this.subElements[element.dataset.element] = element;
         }
-        console
         return this.subElements;
     }
      

@@ -40,30 +40,3 @@ export default class ColumnChartV2 extends ColumnChartV1 {
         return response;
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-// async render(from, to) {
-//     this.element.classList.add('column-chart_loading');
-//     const data = await this.getData(from, to);
-//     super.update(Object.values(data));
-//     this.element.classList.remove('column-chart_loading');
-//     return data;
-//   }
-
-//   async getData(from, to) {
-//     this.url.searchParams.set('from', from);
-//     this.url.searchParams.set('to', to);
-//     const response = await fetchJson(this.url);
-//     return response;
-//   }

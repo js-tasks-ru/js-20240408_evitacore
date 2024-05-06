@@ -92,7 +92,7 @@ export default class DoubleSlider {
     }
 
     dispatchRangeSelectEvent() {
-        let event = new CustomEvent("range-select", { 
+        const event = new CustomEvent("range-select", { 
             detail: {
                 from: this.from,
                 to: this.to

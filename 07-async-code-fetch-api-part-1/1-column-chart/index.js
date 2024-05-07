@@ -15,14 +15,6 @@ export default class ColumnChartV2 extends ColumnChartV1 {
         this.createSubElements();
         this.update(this.from, this.to);
     }
-
-    createSubElements() {
-        const elements = this.element.querySelectorAll('[data-element]');
-        for (const element of elements) {
-            this.subElements[element.dataset.element] = element;
-        }
-        return this.subElements;
-    }
      
     async update(from, to) {
         this.element.classList.add('column-chart_loading');

@@ -4,7 +4,6 @@ import ColumnChartV1 from '../../04-oop-basic-intro-to-dom/1-column-chart/index.
 const BACKEND_URL = 'https://course-js.javascript.ru';
 
 export default class ColumnChartV2 extends ColumnChartV1 {
-    subElements = {};
 
     constructor(props = {}) {
         super(props);

@@ -15,35 +15,37 @@ export default class SortableTableV3 extends SortableTableV2 {
         isSortLocally = false,
         url = ''
     } = {}) {
-        super(headersConfig, {data, sorted, isSortLocally})
+        super(headersConfig, {data, sorted, url})
         this.isSortLocally = isSortLocally;
         this.url = url;
-        this.id = sorted.id ?? this.defaultSortField;
-        this.order = sorted.order ?? this.defaultSortOrder;
+        this.sortField = sorted.id ?? this.defaultSortField;
+        this.sortOrder = sorted.order ?? this.defaultSortOrder;
 
-        this.render();
         this.createEventListeners();
         this.placeholder = this.createElement(this.createPlaceholderTemplate());
         this.loading = this.createElement(this.createLoadingTemplate());
     }
 
+    resetPaginationParams(id, order) {
+        this.start = this.sortField === id && this.sortOrder === order ? this.start : STARTITEMS;
+        this.end = this.sortField === id && this.sortOrder === order ? this.end : LOADITEMS;
+    }
+
     async render() {
-        if(this.isSortLocally){
-            this.sortOnClient(this.id, this.order)
-        }
-        await this.sortOnServer(this.id, this.order)
+        await this.sort(this.sortField, this.sortOrder)
     }
 
     async sort(id, order) {
-        if (this.subElements.body.children.length == 0) {
-            return;
-        }
+        this.resetPaginationParams(id, order)
+
+        this.sortField = id;
+		this.sortOrder = order;
 
         if (this.isSortLocally) {
             this.sortOnClient(id, order);
-          } else {
+        } else {
             await this.sortOnServer(id, order);
-          }
+        }
     }
 
     createEventListeners() {
@@ -52,7 +54,10 @@ export default class SortableTableV3 extends SortableTableV2 {
     }
 
     handlerScroll = (event) => {
-        if(event.target.documentElement.scrollTop + event.target.documentElement.clientHeight >= event.target.documentElement.scrollHeight) {
+        const element = event.target.documentElement;
+        const shouldScroll = element.scrollTop + element.clientHeight >= element.scrollHeight;
+
+        if(shouldScroll) {
             this.start += LOADITEMS;
             this.end += LOADITEMS;
             this.uploadNextData();
@@ -74,45 +79,62 @@ export default class SortableTableV3 extends SortableTableV2 {
     }
 
     sortOnClient(id, order) {
-        super.sortOnClient(id, order);
+        super.sort(id, order);
     }
 
     createUrl(id, order) {
-        this.start = this.id === id && this.order === order ? this.start : STARTITEMS;
-        this.end = this.id === id && this.order === order ? this.end : LOADITEMS;
-        this.id = id;
-        this.order = order;
         const url = new URL(this.url, BACKEND_URL);
+
         url.searchParams.set('_embed', 'subcategory.category');
         url.searchParams.set('_sort', id);
         url.searchParams.set('_order', order);
         url.searchParams.set('_start', this.start);
         url.searchParams.set('_end', this.end);
+
         return url;
     }
 
     async uploadNextData() {
-        this.element.append(this.loading);
-        this.element.classList.add('sortable-table_loading');
-        const url = this.createUrl(this.id, this.order);
+        this.addLoader();
+        const url = this.createUrl(this.sortField, this.sortOrder);
         this.data = await fetchJson(url);
         this.subElements.body.insertAdjacentHTML('beforeend', this.createTableBodyTemplate());
-        this.loading.remove();
-        this.element.classList.remove('sortable-table_loading');
+        this.removeLoader();
     }
 
     async sortOnServer(id, order) {
         const url = this.createUrl(id, order);
         this.data = await fetchJson(url);
-        if(this.data.length){
-            this.element.append(this.placeholder);
-            this.element.classList.add('sortable-table_empty');
+
+        if(this.data.length === 0){
+            this.addPlacehodler();
+        } else {
+            this.removePlacehodler();
         }
-        this.placeholder.remove();
-        this.element.classList.remove('sortable-table_empty');
+
         this.updateBody();
         this.updateHeader(id, order);
         
+    }
+
+    addLoader() {
+        this.element.append(this.loading);
+        this.element.classList.add('sortable-table_loading');
+    }
+
+    removeLoader() {
+        this.loading.remove();
+        this.element.classList.remove('sortable-table_loading');
+    }
+
+    addPlacehodler() {
+        this.element.append(this.placeholder);
+        this.element.classList.add('sortable-table_empty');
+    }
+
+    removePlacehodler() {
+        this.placeholder.remove();
+        this.element.classList.remove('sortable-table_empty');
     }
 
     destroy() {

@@ -7,10 +7,10 @@ export default class SortableTableV2 extends SortableTableV1 {
   	constructor(headersConfig, {
 		data = [],
 		sorted = {},
-		isSortLocally = true
+		url = ''
   	} = {}) {
 		super(headersConfig, data); 
-		this.isSortLocally = isSortLocally;
+		this.url = url;
 		this.sorted = sorted;
 		this.sort(this.defaultSortField, this.defaultSortOrder);
 		this.createEventListeners();
@@ -33,18 +33,6 @@ export default class SortableTableV2 extends SortableTableV1 {
 		const sortElementOrder = sortElement.dataset.order === 'desc' ? 'asc' : 'desc';
 
 		this.sort(sortElementId, sortElementOrder);
-	}
-
-	sort(fieldValue, orderValue) {
-		if (this.isSortLocally) {
-		  this.sortOnClient(fieldValue, orderValue);
-		} else {
-		  this.sortOnServer();
-		}
-	}
-
-	sortOnClient(fieldValue, orderValue) {
-		super.sort(fieldValue, orderValue);
 	}
 
 	destroy() {

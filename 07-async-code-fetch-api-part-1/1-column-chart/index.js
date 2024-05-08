@@ -4,7 +4,6 @@ import ColumnChartV1 from '../../04-oop-basic-intro-to-dom/1-column-chart/index.
 const BACKEND_URL = 'https://course-js.javascript.ru';
 
 export default class ColumnChartV2 extends ColumnChartV1 {
-    subElements = {};
 
     constructor(props = {}) {
         super(props);
@@ -14,14 +13,6 @@ export default class ColumnChartV2 extends ColumnChartV1 {
 
         this.createSubElements();
         this.update(this.from, this.to);
-    }
-
-    createSubElements() {
-        const elements = this.element.querySelectorAll('[data-element]');
-        for (const element of elements) {
-            this.subElements[element.dataset.element] = element;
-        }
-        return this.subElements;
     }
      
     async update(from, to) {

@@ -1,5 +1,6 @@
 export default class ColumnChart {
     element;
+    subElements = {};
     chartHeight = 50;
 
     constructor({
@@ -16,14 +17,21 @@ export default class ColumnChart {
         this.formatHeading = formatHeading;
 
         this.element = this.createElement(this.createTemplate());
+        this.createSubElements();
     }
 
     createElement(template) {
         const element = document.createElement('div');
-
         element.innerHTML = template;
-
         return element.firstElementChild;
+    }
+
+    createSubElements() {
+        const elements = this.element.querySelectorAll('[data-element]');
+        for (const element of elements) {
+            this.subElements[element.dataset.element] = element;
+        }
+        return this.subElements;
     }
 
     getColumnProps() {
@@ -70,7 +78,7 @@ export default class ColumnChart {
 
     update(newData) {
         this.data = newData;
-        this.element.querySelector('[data-element="body"]').innerHTML = this.createChartBodyTemplate();
+        this.subElements.body.innerHTML = this.createChartBodyTemplate();
     }
 
     remove() {

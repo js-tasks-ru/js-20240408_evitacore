@@ -79,22 +79,7 @@ export default class RangePicker {
                 cell.classList.add('rangepicker__selected-between');
             }
         }
-    
-        if (from) {
-            this.addSelectedClass(from, 'rangepicker__selected-from');
-        }
-        
-        if (to) {
-            this.addSelectedClass(to, 'rangepicker__selected-to');
-        }
     }
-
-    addSelectedClass = (date, className) => {
-        const selectedElem = this.element.querySelector(`[data-value="${date.toISOString()}"]`);
-        if (selectedElem) {
-            selectedElem.closest('.rangepicker__cell').classList.add(className);
-        }
-    };
 
     handleSelectorClick = (e) => {
         e.stopPropagation();

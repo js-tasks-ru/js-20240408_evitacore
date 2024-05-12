@@ -162,12 +162,16 @@ export default class RangePicker {
 
     toggle = () => {
         const isElementOpen = this.element.classList.toggle("rangepicker_open");
+        const controlLeft = this.subElements.selector.querySelector('.rangepicker__selector-control-left');
+        const controlRight = this.subElements.selector.querySelector('.rangepicker__selector-control-right');
         this.createSelectorTemplate();
     
         if (isElementOpen) {
-          document.addEventListener("click", this.handleWindowClick);
+            document.addEventListener("click", this.handleWindowClick);
         } else {
-          document.removeEventListener("click", this.handleWindowClick);
+            controlLeft.removeEventListener('click', this.handleLeftClick);
+            controlRight.removeEventListener('click', this.handleRightClick);
+            document.removeEventListener("click", this.handleWindowClick);
         }
     }
 
@@ -215,8 +219,8 @@ export default class RangePicker {
         const controlLeft = selector.querySelector('.rangepicker__selector-control-left');
         const controlRight = selector.querySelector('.rangepicker__selector-control-right');
 
-        controlLeft.addEventListener('click', () => this.handleLeftClick());
-        controlRight.addEventListener('click', () => this.handleRightClick());
+        controlLeft.addEventListener('click', this.handleLeftClick);
+        controlRight.addEventListener('click', this.handleRightClick);
 
         this.renderHighlight();
     }

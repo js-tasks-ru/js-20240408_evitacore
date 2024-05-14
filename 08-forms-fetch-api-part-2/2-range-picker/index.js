@@ -43,7 +43,7 @@ export default class RangePicker {
 
     getStartFromDay(day) {
         return day === 0 ? 7 : day;
-    };
+    }
 
     createButtonTemplate(date) {
         const year  = date.getFullYear();
@@ -84,6 +84,13 @@ export default class RangePicker {
     handleSelectorClick = (e) => {
         e.stopPropagation();
         const value = e.target.dataset.value;
+        const action = e.target.dataset.action;
+
+        if (action) {
+            this.updateMonth(action);
+            this.updateCalendars();
+            this.renderHighlight();
+        }
         
         if(value) {
             this.updateRange(value);
@@ -107,7 +114,7 @@ export default class RangePicker {
         this.to = null;
     
         this.renderHighlight();
-    };
+    }
 
     setCompleteRange = (date) => {
         const from = new Date(Math.min(this.from, date));
@@ -119,7 +126,7 @@ export default class RangePicker {
         this.toggle();
         this.updateInput();
         this.dispatchDateSelectEvent();
-    };
+    }
 
     updateInput = () => {
         this.subElements.from.innerHTML = this.formatDate(this.from);
@@ -132,7 +139,7 @@ export default class RangePicker {
         const day = 1;
     
         return new Date(year, (month + 1) % 12, day);
-    };
+    }
 
     getLastMonth = (date) => {
         const year = date.getMonth() === 0 ? date.getFullYear() - 1 : date.getFullYear();
@@ -140,20 +147,14 @@ export default class RangePicker {
         const day = 1;
     
         return new Date(year, month, day);
-      };
-    
-    handleLeftClick = () => {
-        this.currentMonth = this.getLastMonth(this.currentMonth);
-        
-        this.updateCalendars();
-        this.createSelectorTemplate();
     }
     
-    handleRightClick = () => {
-        this.currentMonth = this.getNextMonth(this.currentMonth);
-        
-        this.updateCalendars();
-        this.createSelectorTemplate();
+    updateMonth = (action) => {
+        if(action === 'left') {
+            this.currentMonth = this.getLastMonth(this.currentMonth);
+        } else {
+            this.currentMonth = this.getNextMonth(this.currentMonth);
+        }
     }
 
     handleInputClick = () => {
@@ -162,15 +163,12 @@ export default class RangePicker {
 
     toggle = () => {
         const isElementOpen = this.element.classList.toggle("rangepicker_open");
-        const controlLeft = this.subElements.selector.querySelector('.rangepicker__selector-control-left');
-        const controlRight = this.subElements.selector.querySelector('.rangepicker__selector-control-right');
         this.createSelectorTemplate();
+        this.renderHighlight();
     
         if (isElementOpen) {
             document.addEventListener("click", this.handleWindowClick);
         } else {
-            controlLeft.removeEventListener('click', this.handleLeftClick);
-            controlRight.removeEventListener('click', this.handleRightClick);
             document.removeEventListener("click", this.handleWindowClick);
         }
     }
@@ -183,21 +181,21 @@ export default class RangePicker {
     createEventListeners = () => {
         this.subElements.input.addEventListener("click", this.handleInputClick);
         this.subElements.selector.addEventListener("click", this.handleSelectorClick);
-    };
+    }
     
     destroyEventListeners = () => {
         this.subElements.input.removeEventListener("click", this.handleInputClick);
         this.subElements.selector.removeEventListener("click", this.handleSelectorClick);
-    };
+    }
 
     updateCalendars = () => {
         const [firstCalendar, secondCalendar] = this.subElements.selector.querySelectorAll(".rangepicker__calendar");
     
         firstCalendar.outerHTML = this.createCalendarTemplate(this.currentMonth);
         secondCalendar.outerHTML = this.createCalendarTemplate(this.getNextMonth(this.currentMonth));
-    };
+    }
 
-    renderCalendars = () => {
+    createCalendarsTemplate = () => {
         const currentMonth = this.currentMonth;
         const nextMonth = this.getNextMonth(this.currentMonth);
 
@@ -212,17 +210,9 @@ export default class RangePicker {
 
         selector.innerHTML = `
             <div class="rangepicker__selector-arrow"></div>
-            <div class="rangepicker__selector-control-left"></div>
-            <div class="rangepicker__selector-control-right"></div>
-            ${this.renderCalendars()}`;
-
-        const controlLeft = selector.querySelector('.rangepicker__selector-control-left');
-        const controlRight = selector.querySelector('.rangepicker__selector-control-right');
-
-        controlLeft.addEventListener('click', this.handleLeftClick);
-        controlRight.addEventListener('click', this.handleRightClick);
-
-        this.renderHighlight();
+            <div data-action="left" class="rangepicker__selector-control-left"></div>
+            <div data-action="right" class="rangepicker__selector-control-right"></div>
+            ${this.createCalendarsTemplate()}`;
     }
 
     createMonthTemplate(date) {

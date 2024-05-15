@@ -203,52 +203,82 @@ export default class ProductForm {
         }
     }
 
-    handleUploadImage = async (e) => { //нужно помочь с рефтакторингом
-        const { uploadImage } = this.subElements
-        const fileInput = this.getFileInput();
-        document.body.appendChild(fileInput);
-        fileInput.click(); 
+    openImage = async () => new Promise((resolve, reject) => {
+        const fileInputElement = this.createFileInputElement();
 
-        await new Promise((resolve) => { // иначе file ниже будет пустым
-            fileInput.addEventListener('change', resolve);
-            document.body.removeChild(fileInput);
-        });
-        const file = fileInput.files[0];
+        document.body.appendChild(fileInputElement);
 
-        if (!file) return
+        const handleChange = (e) => {
+            document.body.removeChild(fileInputElement);
+            e.target.removeEventListener('change', handleChange);
+            e.target.removeEventListener("cancel", handleCancel);
 
-        uploadImage.classList.add('is-loading');
-        uploadImage.disabled = true;
-
-        const formData = new FormData();
-        formData.append('image', file);
-
-        try {
-            const { data } = await this.uploadImage(formData);
-
-            const imageUrl = data.link;
-            const imageSource = file.name;
-            const image = { url: imageUrl, source: imageSource };
-
-            const newImageTemplate = this.createImageTemplate(image);
-            this.subElements.imageListContainer.firstChild.insertAdjacentHTML('beforeend', newImageTemplate);
-            this.defaultFromData.images.push(image);
-        } catch (error) {
-            console.error('Error uploading image:', error);
+            if (e.target && e.target.files && e.target.files[0]) {
+                resolve(e.target.files[0]);
+            } else {
+                reject();
+            }
         }
 
-        uploadImage.classList.remove('is-loading');
-        uploadImage.disabled = false;
-        fileInput.removeEventListener('change', resolve);
+        const handleCancel = (e) => {
+            document.body.removeChild(fileInputElement);
+            e.target.removeEventListener('change', handleChange);
+            e.target.removeEventListener("cancel", handleCancel);
+            reject();
+        }
+        
+        fileInputElement.addEventListener('change', handleChange);
+        fileInputElement.addEventListener("cancel", handleCancel);
+
+        fileInputElement.click();
+    })
+
+    addLoader() {
+        this.subElements.uploadImage.classList.add('is-loading');
+        this.subElements.uploadImage.disabled = true;
     }
 
-    getFileInput() {
-        const fileInput = document.createElement(`input`);
-        fileInput.name = "image";
-        fileInput.style.display = "none";
-        fileInput.type = "file";
-        fileInput.accept = "image/*";
-        return fileInput;
+    removeLoader() {
+        this.subElements.uploadImage.classList.remove('is-loading');
+        this.subElements.uploadImage.disabled = false;
+    }
+
+    handleUploadImage = async (e) => { 
+        try {
+            const image = await this.openImage();
+            const formData = new FormData();
+            formData.append('image', image);
+
+            this.addLoader();
+
+            const response = await this.uploadImage(formData);
+
+            this.removeLoader();
+
+            const dataImage = {
+                url: response.data.link,
+                source: image.name
+            }
+            const newImageTemplate = this.createImageTemplate(dataImage);
+
+            this.subElements.imageListContainer.firstChild.insertAdjacentHTML('beforeend', newImageTemplate);
+            this.defaultFromData.images.push(dataImage);
+
+        } catch (error) {
+            console.error('Error uploading image:', error);
+            this.removeLoader();
+        }
+    }
+
+    createFileInputElement() {
+        const element = document.createElement(`input`);
+
+        element.name = "image";
+        element.style.display = "none";
+        element.type = "file";
+        element.accept = "image/*";
+
+        return element;
     }
 
     async uploadImage(body) {

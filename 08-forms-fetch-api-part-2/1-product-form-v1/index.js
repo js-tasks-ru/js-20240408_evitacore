@@ -74,7 +74,7 @@ export default class ProductForm {
 
     createImageTemplate({ url, source }) {
         return(
-            `<li class="products-edit__image list-item sortable-list__item" style="">
+            `<li class="products-edit__imagelist-item sortable-list__item" style="">
                 <input type="hidden" name="url" value=${escapeHtml(url)}>
                 <input type="hidden" name="source" value=${escapeHtml(source)}>
                 <span>

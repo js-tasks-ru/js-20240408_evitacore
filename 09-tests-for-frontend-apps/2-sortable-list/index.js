@@ -1,6 +1,7 @@
 export default class SortableList {
     draggingElement;
     placeholderElement;
+    shiftX;
 
     constructor({ items = [] }) {
         this.items = items;
@@ -20,14 +21,14 @@ export default class SortableList {
         return element;
     }
 
-    handleItemAction = (e) => {
+    handlePointerDown = (e) => {
         const element = e.target.closest('.sortable-list__item');
         const { deleteHandle, grabHandle } = e.target?.dataset;
 
         if (element) {
             e.preventDefault();
             if (grabHandle === '') {
-                this.initiateDrag(element, e);
+                this.startDragging(element, e);
             }
 
             if (deleteHandle === '') {
@@ -36,17 +37,20 @@ export default class SortableList {
         }
     }
 
-    initiateDrag(element, e) {
+    startDragging(element, e) {
         this.draggingElement = element;
         this.placeholderElement = this.createPlaceholderElement();
 
         element.classList.add('sortable-list__item_dragging');
-        this.element.insertBefore(this.placeholderElement, element.nextSibling);
-        this.element.appendChild(element);
-
         element.style.width = '100%';
         element.style.position = 'fixed';
         element.style.zIndex = '1000';
+
+        this.shiftX = e.clientX - element.getBoundingClientRect().left;
+
+        this.element.insertBefore(this.placeholderElement, element.nextSibling);
+        this.element.appendChild(element);
+
         this.moveElementAt(e.pageX, e.pageY);
 
         document.addEventListener('pointermove', this.handlePointerMove);
@@ -56,7 +60,7 @@ export default class SortableList {
     moveElementAt(pageX, pageY) {
         this.draggingElement.style['pointer-events'] = 'none';
 
-        const left = pageX - window.scrollX;
+        const left = pageX - window.scrollX - this.shiftX;
         const top = pageY - window.scrollY - this.draggingElement.offsetHeight / 2;
 
         this.draggingElement.style.left = `${left}px`;
@@ -93,6 +97,7 @@ export default class SortableList {
 
         this.draggingElement = null;
         this.placeholderElement = null;
+        this.shiftX = null;
     }
 
     createPlaceholderElement() {
@@ -104,11 +109,11 @@ export default class SortableList {
     }
 
     createEventListeners() {
-        this.element.addEventListener('pointerdown', this.handleItemAction);
+        this.element.addEventListener('pointerdown', this.handlePointerDown);
     }
 
     destroyEventListeners() {
-        this.element.removeEventListener('pointerdown', this.handleItemAction);
+        this.element.removeEventListener('pointerdown', this.handlePointerDown);
         document.removeEventListener('pointermove', this.handlePointerMove);
         document.removeEventListener('pointerup', this.handlePointerUp);
     }

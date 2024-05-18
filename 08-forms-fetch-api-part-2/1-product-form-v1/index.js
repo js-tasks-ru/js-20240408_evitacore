@@ -74,7 +74,7 @@ export default class ProductForm {
 
     createImageTemplate({ url, source }) {
         return(
-            `<li class="products-edit__imagelist-item sortable-list__item" style="">
+            `<li class="products-edit__image list-item sortable-list__item" style="">
                 <input type="hidden" name="url" value=${escapeHtml(url)}>
                 <input type="hidden" name="source" value=${escapeHtml(source)}>
                 <span>
@@ -195,14 +195,6 @@ export default class ProductForm {
         return await fetchJson(url);
     }
 
-    handleImagePointerdown = (e) => {
-        const { deleteHandle}  = e.target?.dataset;
-
-        if (deleteHandle === '') {
-            this.deleteImage(e.target);
-        }
-    }
-
     openImage = async () => new Promise((resolve, reject) => {
         const fileInputElement = this.createFileInputElement();
 
@@ -294,12 +286,6 @@ export default class ProductForm {
         return response;
     };
     
-    deleteImage = (target) => {
-        const element = target.closest("li.products-edit__imagelist-item");
-        this.defaultFromData.images = this.defaultFromData.images.filter(item => item.source !== element.innerText);
-        element.remove();
-    };
-
     handleSubmitForm = (e) => {
         e.preventDefault();
         this.save();
@@ -308,13 +294,11 @@ export default class ProductForm {
     createEventListeners() {
         this.subElements.productForm.addEventListener('submit', this.handleSubmitForm);
         this.subElements.uploadImage.addEventListener('pointerdown', this.handleUploadImage)
-        this.subElements.imageListContainer.addEventListener('pointerdown', this.handleImagePointerdown);
     }
 
     destroyEventListeners() {
         this.subElements.productForm.removeEventListener('submit', this.handleSubmitForm);
         this.subElements.uploadImage.removeEventListener('pointerdown', this.handleUploadImage)
-        this.subElements.imageListContainer.removeEventListener('pointerdown', this.handleImagePointerdown);
     } 
 
     dispatchCustomEvent = (name, detail = {}) => {

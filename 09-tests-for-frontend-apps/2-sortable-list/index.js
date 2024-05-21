@@ -42,9 +42,7 @@ export default class SortableList {
         this.placeholderElement = this.createPlaceholderElement();
 
         element.classList.add('sortable-list__item_dragging');
-        element.style.width = '100%';
-        element.style.position = 'fixed';
-        element.style.zIndex = '1000';
+        element.style.width = `${this.element.offsetWidth}px`;
 
         this.shiftX = e.clientX - element.getBoundingClientRect().left;
 
@@ -72,7 +70,6 @@ export default class SortableList {
         const placeholderIndex = [...this.element.children].indexOf(this.placeholderElement);
         const closestElement = document.elementFromPoint(e.clientX, e.clientY).closest('.sortable-list__item');
         if (closestElement && closestElement !== this.draggingElement) {
-            
             const closestIndex = [...this.element.children].indexOf(closestElement);
             if (placeholderIndex > closestIndex) {
                 this.element.insertBefore(this.placeholderElement, closestElement);
@@ -87,9 +84,7 @@ export default class SortableList {
         document.removeEventListener('pointerup', this.handlePointerUp);
 
         this.draggingElement.classList.remove('sortable-list__item_dragging');
-        this.draggingElement.style.position = '';
         this.draggingElement.style['pointer-events'] = 'all';
-        this.draggingElement.style.zIndex = '';
         this.draggingElement.style.left = '';
         this.draggingElement.style.top = '';
         this.element.insertBefore(this.draggingElement, this.placeholderElement);
